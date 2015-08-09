@@ -1,0 +1,241 @@
+
+body {
+    line-height: 1.5em;
+    text-align: center;
+    padding: 70px 0;
+    background: white!important;
+    color: #808080!important;
+}
+
+.name {
+    font-size: 1.75em;
+    font-weight: 200;
+    position: relative;
+    top:-.4em;
+    right: -1em;
+}
+
+.li-remove {
+    padding-right:.5em;top:-.5em;
+    cursor: pointer;
+}
+
+.rowHover {
+    color:#3d3d3d;
+    background:#dededf!important;
+}
+
+.opaque {
+    opacity: 1!important;    
+}
+
+.deleting {
+    background: #a22!important;
+    color: #fdd;
+}
+
+.stealth {
+    float: left;
+    width:100%;
+    height:4em;
+    position: relative;
+    top: 2.5em;
+    z-index: 1000000;
+}
+
+.stealth i {
+    opacity: .1;
+}
+
+.stealth span {
+    position: relative;
+    top: 4em;
+}
+
+.panel-heading {
+    background: #4d80cc!important;
+    border-color: #4d80cc!important;
+    color: white!important;
+    border-radius: 1in!important;
+}
+
+.panel-body {
+    background: white!important;
+}
+
+.panel {
+    border:none!important;
+    border-radius: 1in!important;
+}
+
+.profile-panel {
+    background: #4d80cc!important;
+    min-height: 68px;
+    padding: 1em;
+}
+
+.about-panel {
+    text-align: left;
+}
+
+.li-remove {
+    left:-2em;
+    color:#909090!important;
+}
+
+.li-remove:hover {
+    color:#505050!important;
+}
+
+a, button, .btn {
+    cursor: pointer;
+    color: #4d80cc;
+}
+
+ul {
+    list-style-type: none;
+}
+
+.navbar * a, .navbar * button, .navbar * .btn  {
+    cursor: pointer;
+    color:black!important;
+}
+
+button, .btn {
+    box-shadow: inset -1px -2px 5px rgba(25,25,25,.3);
+    border-top: solid 1px rgba(0,0,0,.2)!important;
+    border-bottom: solid 1px rgba(0,0,0,.2)!important;
+    border-radius: 5em!important;
+}
+
+button:hover, .btn:hover {
+    box-shadow: inset -1px -2px 7px rgba(25,25,25,.6);
+}
+
+input, button, .btn {
+    margin-top: 6px!important;
+    margin-bottom: 6px!important;
+    padding-top: 6px!important;
+    padding-bottom: 6px!important;
+    border-top: solid 1px rgba(0,0,0,.1)!important;
+    border-bottom: solid 1px rgba(0,0,0,.1)!important;
+    border-left: none!important;
+    border-right: none!important;
+    border-radius: .5em;
+}
+
+input {
+    text-align: center;
+    background: rgba(255,255,255,.75);
+    color: #333;
+    width: 75%;
+    border: none;
+    box-shadow: inset 1px 2px 5px rgba(25,25,25,.1);
+}
+
+input:hover {
+    border-bottom:solid 1px rgba(0,0,0,.4);
+    box-shadow: inset 1px 2px 7px rgba(25,25,25,.4);
+}
+
+.corners {
+    border-radius: 0!important;
+}
+
+.corners-left {
+    border-radius: 0 .5em .5em 0;
+}
+
+.corners-right {
+    border-radius: .5em 0 0 .5em;
+}
+
+nav img {
+    margin: -1em .5em;
+    height: 2em;
+    width: 2em;
+}
+
+nav .open, nav .dropdown-toggle {
+    background: rgba(230,230,230,.95)!important;
+}
+
+hr {
+    margin: none;
+    height: 1px;
+    width: 100%;
+    background: none;
+    border: none;
+    box-shadow: none;
+}
+
+.glass {
+    background: rgba(240,240,240,.9)!important;
+    border-bottom: solid 1px rgba(230,230,230,.95)!important;
+    box-shadow: 0 .5em 1em rgba(0,0,0,.25)!important;
+}
+
+.float-left {
+    float: left;
+}
+
+.float-right {
+    float: right;
+}
+
+.bottom-right {
+    position: fixed!important;
+    bottom: 0!important;
+    right: 15px!important;
+    padding: 0!important;
+    margin: 0!important;
+    border-top: 0!important;
+}
+
+.half {
+    float:left;
+    width:50%;
+    margin:0;
+    padding:0;
+}
+
+.third {
+    float:left;
+    width:33.33%;
+    margin:0;
+    padding:0;
+}
+
+.two-thirds {
+    float:left;
+    width:66.66%;
+    margin:0;
+    padding:0;
+}
+
+.quarter {
+    float:left;
+    width:25%;
+    margin:0;
+    padding:0;
+}
+
+.fifth {
+    float:left;
+    width:20%;
+    margin:0;
+    padding:0;
+}
+
+.two-fifths {
+    float:left;
+    width:40%;
+    margin:0;
+    padding:0;
+}
+
+#names ul li {
+    min-height:2em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+}

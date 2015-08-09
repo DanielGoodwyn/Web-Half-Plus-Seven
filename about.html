@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <title>Half Plus Seven</title>
+  <meta name="description" content="Half Plus Seven">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png"/>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="http://www.parsecdn.com/js/parse-1.3.3.min.js"></script>
+</head>
+<body>
+  <nav class="navbar navbar-default navbar-fixed-top glass">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#half-plus-seven-navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" onclick="window.location.href='index.html';">
+          <span>
+            <img src="images/half-plus-seven.png" style="border-radius:1in;">
+          </span>
+          <span class="hidden-xs">
+            Half Plus Seven
+          </span>
+        </a>
+      </div>
+      <div class="collapse navbar-collapse" id="half-plus-seven-navbar-collapse">
+        <ul class="nav navbar-nav navbar-right">
+          <li>
+            <a href="about.html"><i class="glyphicon glyphicon-info-sign"></i> about</a>
+          </li>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+              <span id="userProfilePicture"></span>
+              <span id="usernameDiv">log in to begin.</span>
+              <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu" role="menu">
+              <li><a onclick="window.location.href='index.html';"><i class="glyphicon glyphicon-hourglass"></i> Half Plus Seven</a></li>
+              <li class="divider"></li>
+              <li><a onclick="logout()"><i class="glyphicon glyphicon-log-out"></i> Log out</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="panel panel-default login-panel">
+          <div class="panel-heading">
+            <h3 class="panel-title"> <i class="float-left glyphicon glyphicon-info-sign"></i> About</h3>
+          </div>
+          <div class="panel-body about-panel">
+            <div class="row">
+              <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <p>Ever wonder if a potential crush is too young or too old for you to date while maintaining the general approval of society?</p>
+                <p>Use this app to calculate the socially acceptable age disparity range for potential relationships.</p>
+                <p>Formula to find the lower limit of the age range:</p>
+                <p>(your age/2)+7</p>
+                <p>Formula to find the upper limit of the age range:</p>
+                <p>(your age-7)*2</p>
+                <p>This app is obviously useless to anyone under 14.</p>
+                <p style="text-align:center!important;">
+                  <a class="btn btn-primary" id="loginBtn" href="index.html">log in to begin</a>
+                  <a class="btn btn-primary" id="beginBtn" href="index.html" style="display:none;">begin</a>
+                </p>
+                <p>View on <a href="http://danielgoodwyn.com/halfplusseven/about">GitHub</a>. (Pending Apple AppStore approval.)</p>
+                <p>This <b>Web App</b> was built in 2015 by <a href="http://www.DanielGoodwyn.com/contact">Daniel Goodwyn</a> using <a href="http://www.parse.com">Parse</a>, <a href="http://www.jquery.com">jQuery</a>, and <a href="http://getbootstrap.com">Bootstrap</a> (including <a href="http://glyphicons.com/">Glyphicons</a>).</p>                
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <script src="js/half-plus-seven.js"></script>
+</body>
+</html>

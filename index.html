@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <title>Half Plus Seven</title>
+  <meta name="description" content="Half Plus Seven">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png"/>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="http://www.parsecdn.com/js/parse-1.3.3.min.js"></script>
+</head>
+<body>
+  <nav class="navbar navbar-default navbar-fixed-top glass">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#half-plus-seven-navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>        
+        <a class="navbar-brand" onclick="window.location.href='index.html';">
+          <span>
+            <img src="images/half-plus-seven.png" style="border-radius:1in;">
+          </span>
+          <span class="hidden-xs">
+            Half Plus Seven
+          </span>
+        </a>
+      </div>
+      <div class="collapse navbar-collapse" id="half-plus-seven-navbar-collapse">
+        <ul class="nav navbar-nav navbar-right">
+          <li>
+            <a href="about.html"><i class="glyphicon glyphicon-info-sign"></i> about</a>
+          </li>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+              <span id="userProfilePicture"></span>
+              <span id="usernameDiv">log in to begin.</span>
+              <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu" role="menu">
+              <li><a onclick="window.location.href='index.html';"><i class="glyphicon glyphicon-hourglass"></i> Half Plus Seven</a></li>
+              <li class="divider"></li>
+              <li><a onclick="logout()"><i class="glyphicon glyphicon-log-out"></i> Log out</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="panel panel-default login-panel">
+          <div class="panel-heading">
+            <h3 class="panel-title"> <i class="float-left glyphicon glyphicon-user"></i> Login</h3>
+          </div>
+          <div class="panel-body">
+            <div class="row">
+              <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <input type="email" id="emailInput" placeholder="email" onkeypress="return signup(event)">
+                <input type="password" id="passwordInput" placeholder="password" onkeypress="return signup(event)">
+              <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <button class="btn btn-primary" id="loginBtn" onclick="signup('click')">begin</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="content-panel" style="display:none;">
+      <div id="profile"></div>
+    </div>
+    <div style='clear:both;'><br></div>
+    <div class="panel panel-default content-panel" style="display:none;">
+      <div style='background:#dadada;color:#111;font-weight:bolder;border-bottom:solid .5ex #4d80cc;'>
+        <ul><br>
+          <div class='quarter'>
+            <input id='nameInput' placeholder='Name' type='text'>
+          </div>
+          <div class='quarter'>
+            <input id='ageInput' placeholder='Age' type='number'>
+          </div>
+          <div class='quarter'>
+            <input id='dobInput' placeholder='Birthday' min='14' max='200' type='datetime'>
+          </div>
+          <span style='position:relative;top:1em;' class='quarter'>
+            <span class='half'>Range</span>
+            <span class='half'>
+              <button style='position:relative;top:-1.3em;width:3em;height:3em;' class='addPerson btn btn-primary'>
+                <i class='glyphicon glyphicon-plus'></i>
+              </button>
+            </span>
+          </span>
+        </ul>
+        <div style='clear:both;'><br></div>
+      </div>
+      <div id="names"></div>
+    </div>
+  </div>
+  <script src="js/half-plus-seven.js"></script>
+</body>
+</html>
