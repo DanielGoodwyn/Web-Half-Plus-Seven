@@ -56,7 +56,7 @@ body {
     background: #4d80cc!important;
     border-color: #4d80cc!important;
     color: white!important;
-    border-radius: 1in!important;
+    border-radius: 1em 1em 0 0 !important;
 }
 
 .panel-body {
@@ -69,7 +69,9 @@ body {
 }
 
 .profile-panel {
-    background: #4d80cc!important;
+    background: #dadada!important;
+    border-bottom: solid .5ex #4d80cc;
+    border-radius: 0 0 1em 1em;
     min-height: 68px;
     padding: 1em;
 }
@@ -234,7 +236,7 @@ hr {
     padding:0;
 }
 
-#names ul li {
+#list ul li {
     min-height:2em;
     padding-top: 1em;
     padding-bottom: 1em;

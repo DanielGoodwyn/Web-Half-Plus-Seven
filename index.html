@@ -73,11 +73,17 @@
       </div>
     </div>
     <div class="content-panel" style="display:none;">
+      <div class="panel-heading">
+	<h3 class="panel-title"> <i class="float-left glyphicon glyphicon-user"></i> Profile</h3>
+      </div>
       <div id="profile"></div>
     </div>
     <div style='clear:both;'><br></div>
     <div class="panel panel-default content-panel" style="display:none;">
-      <div style='background:#dadada;color:#111;font-weight:bolder;border-bottom:solid .5ex #4d80cc;'>
+      <div class="panel-heading">
+	<h3 class="panel-title"> <i class="float-left glyphicon glyphicon-heart"></i> New Person</h3>
+      </div>
+      <div style='background:#dadada;color:#111;border-bottom:solid .5ex #4d80cc;border-radius: 0 0 0 1em;'>
         <ul><br>
           <div class='quarter'>
             <input id='nameInput' placeholder='Name' type='text'>
@@ -89,7 +95,7 @@
             <input id='dobInput' placeholder='Birthday' min='14' max='200' type='datetime'>
           </div>
           <span style='position:relative;top:1em;' class='quarter'>
-            <span class='half'>Range</span>
+	    <span class='half' style='position:relative;top:-.75em;'><b>Range</b><br><div id="range">-</div></span>
             <span class='half'>
               <button style='position:relative;top:-1.3em;width:3em;height:3em;' class='addPerson btn btn-primary'>
                 <i class='glyphicon glyphicon-plus'></i>
@@ -99,7 +105,7 @@
         </ul>
         <div style='clear:both;'><br></div>
       </div>
-      <div id="names"></div>
+      <div id="list"></div>
     </div>
   </div>
   <script src="js/half-plus-seven.js"></script>

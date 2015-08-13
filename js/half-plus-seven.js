@@ -33,7 +33,15 @@ $(document).ready(function() {
 			$( "#dobInput" ).keyup(function( event ) {
 				var now = new Date().getTime()/365.25/24/60/60/1000;	
 				var dob = new Date( $('#dobInput').val() );
-				$( "#ageInput" ).val((now-(Date.parse((dob))/365.25/24/60/60/1000)).toFixed(2));
+				var age = (now-(Date.parse((dob))/365.25/24/60/60/1000)).toFixed(2);
+				$( "#ageInput" ).val(age);
+				if (age>14) {
+					var lowerRange = ((age/2)+7).toFixed(2);
+					var upperRange = ((age-7)*2).toFixed(2);
+					setElementById("range", lowerRange + "-" +  upperRange);
+				} else {
+					setElementById("range", "0");
+				}
 				var keycode = (event.keyCode ? event.keyCode : event.which);
 				if ( keycode == 13 ) {
 					addPerson();
@@ -41,12 +49,20 @@ $(document).ready(function() {
 			});
 			$( "#ageInput" ).keyup(function( event ) {
 				var now = new Date().getTime();
-				var age = $('#ageInput').val()*365.25*24*60*60*1000;
-				var date = new Date(now-age);
+				var age = $('#ageInput').val();
+				var dob = age*365.25*24*60*60*1000;
+				var date = new Date(now-dob);
 				var day = date.getDate();
 				var month = date.getMonth()+1;
 				var year = date.getFullYear();
 				$( "#dobInput" ).val( month + "/" + day + "/" + year );
+				if (age>14) {
+					var lowerRange = ((age/2)+7).toFixed(2);
+					var upperRange = ((age-7)*2).toFixed(2);
+					setElementById("range", lowerRange + "-" +  upperRange);
+				} else {
+					setElementById("range", "0");
+				}
 				var keycode = (event.keyCode ? event.keyCode : event.which);
 				if ( keycode == 13 ) {
 					addPerson();
@@ -154,8 +170,8 @@ function populateList() {
 	var currentUserUpperRange = ((currentUserAge-7)*2).toFixed(2);
 	var alternatingNumber = 0;
 	var alternatingColor = 0;
-	var names = "";
-	names = names + "<ul><div style='clear:both;'></div>";
+	var list = "";
+	list = list + "<ul><div style='clear:both;'></div>";
 	currentUser = Parse.User.current();
 	var Person = Parse.Object.extend("Person");
 	var query = new Parse.Query(Person);
@@ -185,17 +201,17 @@ function populateList() {
 				outOfRange = "<i style='color:#eee;left:-2em;top:-3.5em;background:#4d80cc;border-radius:1in;padding:1em;'";
 				outOfRange = outOfRange + "class='float-left glyphicon glyphicon-thumbs-up'></i>";
 			}
-			names = names + "<li class='" + object.id + "' style='background: #"+ alternatingColor +" ;'>";
-			names = names + "<i data-id='" + object.id + "' class='li-remove float-right glyphicon glyphicon-remove-circle'></i>";
-			names = names + "<div class='stealth'><span>" + outOfRange + "</span></div>";
-			names = names + "<span class='quarter name'>" + object.get('name') + "</span>";
-			names = names + "<span class='quarter age'>" + age + "</span>";
-			names = names + "<span class='quarter dob'>" + month + "/" + day + "/" + year + "</span>";
-			names = names + "<span class='quarter range'>" + lowerRange + "-" +  upperRange + "</span>";
-			names = names + "<div style='clear:both;'><br></div>";
+			list = list + "<li class='" + object.id + "' style='background: #"+ alternatingColor +" ;'>";
+			list = list + "<i data-id='" + object.id + "' class='li-remove float-right glyphicon glyphicon-remove-circle'></i>";
+			list = list + "<div class='stealth'><span>" + outOfRange + "</span></div>";
+			list = list + "<span class='quarter name'>" + object.get('name') + "</span>";
+			list = list + "<span class='quarter age'>" + age + "</span>";
+			list = list + "<span class='quarter dob'>" + month + "/" + day + "/" + year + "</span>";
+			list = list + "<span class='quarter range'>" + lowerRange + "-" +  upperRange + "</span>";
+			list = list + "<div style='clear:both;'><br></div>";
 		}
-		names = names + "</ul>";
-		setElementById("names", names);
+		list = list + "</ul>";
+		setElementById("list", list);
 		populateProfile();
 	},
 	error: function(error) {
@@ -212,7 +228,7 @@ function populateProfile() {
 	var day = dob.getDate();
 	var month = dob.getMonth()+1;
 	var year = dob.getFullYear();
-	var age = (now-dob/365.25/24/60/60/1000).toFixed(2);	
+	var age = (now-dob/365.25/24/60/60/1000).toFixed(2);
 	var lowerRange = ((age/2)+7).toFixed(2);
 	var upperRange = ((age-7)*2).toFixed(2);
 	info = info + "<li>"
@@ -251,7 +267,8 @@ function populateProfile() {
 	$( "#userDobInput" ).keyup(function( event ) {
 		var now = new Date().getTime()/365.25/24/60/60/1000;	
 		var dob = new Date( $('#userDobInput').val() );
-		$( "#userAgeInput" ).val((now-(Date.parse((dob))/365.25/24/60/60/1000)).toFixed(2));
+		var age = (now-(Date.parse((dob))/365.25/24/60/60/1000)).toFixed(2);
+		$( "#userAgeInput" ).val(age);
 		var keycode = (event.keyCode ? event.keyCode : event.which);
 		if ( keycode == 13 ) {
 			updateSelf();
