@@ -195,7 +195,7 @@ function populateList() {
 				alternatingColor = "f0f0f0";
 			}
 			if (age<currentUserLowerRange||age>currentUserUpperRange) {
-				outOfRange = "<i style='color:#eee;left:-2em;top:-3.5em;background:#e44;border-radius:1in;padding:1em;'";
+				outOfRange = "<i style='color:#eee;left:-2em;top:-3.5em;background:#e30c00;border-radius:1in;padding:1em;'";
 				outOfRange = outOfRange + "class='float-left glyphicon glyphicon-thumbs-down'></i>";
 			} else {
 				outOfRange = "<i style='color:#eee;left:-2em;top:-3.5em;background:#4d80cc;border-radius:1in;padding:1em;'";
