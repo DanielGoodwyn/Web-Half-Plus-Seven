@@ -1,8 +1,23 @@
+const firebaseConfig = {
+  // TODO: Replace with actual Firebase config
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
 
-Parse.initialize("xxUw77Hqfy0HzwspWZMUprW3k6EK64WevWUGzpEn", "RQswjcgMZlM2Lg0HLNeIgNzQs2botgwU3JkuYKuw");
+// Initialize Firebase if it hasn't been initialized
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+const auth = firebase.auth();
+const db = firebase.firestore();
 
 var username;
 var email;
+var userId;
 
 var passwordInput;
 var emailInput;
@@ -13,258 +28,292 @@ var sPage = sPath.substring(sPath.lastIndexOf('/') + 1);
 var newestName = "";
 
 $(document).ready(function() {
-	if (sPage == "index.html") {
-		var currentUser = Parse.User.current();
-		username = currentUser.getUsername();
-		setElementById("usernameDiv", "<b>" + username + "</b>");
-		if (currentUser) {
-			$( ".login-panel" ).hide();
-			$( ".content-panel" ).show();
-			populateList();			
-			$( ".addPerson" ).on( "click", function() {
-				addPerson();
-			});
-			$( "#nameInput" ).keyup(function( event ) {
-				var keycode = (event.keyCode ? event.keyCode : event.which);
-				if ( keycode == 13 ) {
-					addPerson();
-				}
-			});
-			$( "#dobInput" ).keyup(function( event ) {
-				var now = new Date().getTime()/365.25/24/60/60/1000;	
-				var dob = new Date( $('#dobInput').val() );
-				var age = (now-(Date.parse((dob))/365.25/24/60/60/1000)).toFixed(2);
-				$( "#ageInput" ).val(age);
-				if (age>14) {
-					var lowerRange = ((age/2)+7).toFixed(2);
-					var upperRange = ((age-7)*2).toFixed(2);
-					setElementById("range", lowerRange + "-" +  upperRange);
-				} else {
-					setElementById("range", "0");
-				}
-				var keycode = (event.keyCode ? event.keyCode : event.which);
-				if ( keycode == 13 ) {
-					addPerson();
-				}
-			});
-			$( "#ageInput" ).keyup(function( event ) {
-				var now = new Date().getTime();
-				var age = $('#ageInput').val();
-				var dob = age*365.25*24*60*60*1000;
-				var date = new Date(now-dob);
-				var day = date.getDate();
-				var month = date.getMonth()+1;
-				var year = date.getFullYear();
-				$( "#dobInput" ).val( month + "/" + day + "/" + year );
-				if (age>14) {
-					var lowerRange = ((age/2)+7).toFixed(2);
-					var upperRange = ((age-7)*2).toFixed(2);
-					setElementById("range", lowerRange + "-" +  upperRange);
-				} else {
-					setElementById("range", "0");
-				}
-				var keycode = (event.keyCode ? event.keyCode : event.which);
-				if ( keycode == 13 ) {
-					addPerson();
-				}
-		});
-		} else {
-			$( ".login-panel" ).show();
-			$( ".content-panel" ).hide();
-		}
-	} else if (sPage == "about.html") {		
-		var currentUser = Parse.User.current();
-		username = currentUser.getUsername();
-		setElementById("usernameDiv", "<b>" + username + "</b>");
-		if (currentUser) {
-			$( "#loginBtn" ).hide();
-			$( "#beginBtn" ).show();
-		}
+    auth.onAuthStateChanged(function(user) {
+        if (user) {
+            userId = user.uid;
+            db.collection("users").doc(userId).get().then((doc) => {
+                if (doc.exists) {
+                    username = doc.data().name || user.email;
+                } else {
+                    username = user.email;
+                }
+                setElementById("usernameDiv", "<b>" + username + "</b>");
+                if (sPage == "index.html" || sPage == "") {
+                    $( ".login-panel" ).hide();
+                    $( ".content-panel" ).show();
+                    populateList();
+                } else if (sPage == "about.html") {
+                    $( "#loginBtn" ).hide();
+                    $( "#beginBtn" ).show();
+                }
+            });
+        } else {
+            userId = null;
+            username = null;
+            setElementById("usernameDiv", "log in to begin.");
+            if (sPage == "index.html" || sPage == "") {
+                $( ".login-panel" ).show();
+                $( ".content-panel" ).hide();
+            } else if (sPage == "about.html") {
+                $( "#loginBtn" ).show();
+                $( "#beginBtn" ).hide();
+            }
+        }
+    });
+
+	if (sPage == "index.html" || sPage == "") {
+        $( ".addPerson" ).on( "click", function() {
+            addPerson();
+        });
+        $( "#nameInput" ).keyup(function( event ) {
+            var keycode = (event.keyCode ? event.keyCode : event.which);
+            if ( keycode == 13 ) {
+                addPerson();
+            }
+        });
+        $( "#dobInput" ).keyup(function( event ) {
+            var now = new Date().getTime()/365.25/24/60/60/1000;	
+            var dob = new Date( $('#dobInput').val() );
+            var age = (now-(Date.parse((dob))/365.25/24/60/60/1000)).toFixed(2);
+            $( "#ageInput" ).val(age);
+            if (age>14) {
+                var lowerRange = ((age/2)+7).toFixed(2);
+                var upperRange = ((age-7)*2).toFixed(2);
+                setElementById("range", lowerRange + "-" +  upperRange);
+            } else {
+                setElementById("range", "0");
+            }
+            var keycode = (event.keyCode ? event.keyCode : event.which);
+            if ( keycode == 13 ) {
+                addPerson();
+            }
+        });
+        $( "#ageInput" ).keyup(function( event ) {
+            var now = new Date().getTime();
+            var age = $('#ageInput').val();
+            var dob = age*365.25*24*60*60*1000;
+            var date = new Date(now-dob);
+            var day = date.getDate();
+            var month = date.getMonth()+1;
+            var year = date.getFullYear();
+            $( "#dobInput" ).val( month + "/" + day + "/" + year );
+            if (age>14) {
+                var lowerRange = ((age/2)+7).toFixed(2);
+                var upperRange = ((age-7)*2).toFixed(2);
+                setElementById("range", lowerRange + "-" +  upperRange);
+            } else {
+                setElementById("range", "0");
+            }
+            var keycode = (event.keyCode ? event.keyCode : event.which);
+            if ( keycode == 13 ) {
+                addPerson();
+            }
+        });
 	}
 });
 
 function signup(e) {
 	if (e.keyCode == 13 || e == "click") {
-		usernameInput = document.getElementById("emailInput").value.toLowerCase();
-		passwordInput = document.getElementById("passwordInput").value;
-		emailInput = document.getElementById("emailInput").value.toLowerCase();
-		var user = new Parse.User();
-		user.set("username", usernameInput);
-		user.set("password", passwordInput);
-		user.set("email", emailInput);
-		user.set("name", emailInput);
-		var dob = new Date();
-		user.set("DOB", dob);
-		user.signUp(null, {
-			success: function(user) {
-				var currentUser = Parse.User.current();
-				username = currentUser.getUsername();
-				userId = currentUser.id;
-				setElementById("usernameDiv", "<b>" + username + "</b>");
-				$( ".login-panel" ).hide();
-				$( ".content-panel" ).show();
-				populateList();
-			},
-			error: function(user, error) {
-		    	//alert("Error: " + error.code + " " + error.message);
-				login('click');
-		  	}
-		});
+		emailInputStr = document.getElementById("emailInput").value.toLowerCase();
+		passwordInputStr = document.getElementById("passwordInput").value;
+        
+        auth.createUserWithEmailAndPassword(emailInputStr, passwordInputStr)
+            .then((userCredential) => {
+                var user = userCredential.user;
+                var dob = new Date();
+                db.collection("users").doc(user.uid).set({
+                    email: emailInputStr,
+                    name: emailInputStr,
+                    DOB: firebase.firestore.Timestamp.fromDate(dob)
+                }).then(() => {
+                    // onAuthStateChanged will handle UI updates
+                });
+            })
+            .catch((error) => {
+                // If user exists or other error, try to login
+                login('click');
+            });
 	}
 }
 
 function login(e) {
 	if (e.keyCode == 13 || e == "click") {
-		usernameInput = document.getElementById("emailInput").value.toLowerCase();
-		passwordInput = document.getElementById("passwordInput").value.toLowerCase();
-		Parse.User.logIn(usernameInput, passwordInput, {
-			success: function(user) {
-				var currentUser = Parse.User.current();
-				username = currentUser.getUsername();
-				userId = currentUser.id;
-				setElementById("usernameDiv", "<b>" + username + "</b>");
-				$( ".login-panel" ).hide();
-				$( ".content-panel" ).show();
-				populateList();
-			},
-			error: function(user, error) {
-				alert("Error: " + error.code + " " + error.message);				
-			}
-		});
+		emailInputStr = document.getElementById("emailInput").value.toLowerCase();
+		passwordInputStr = document.getElementById("passwordInput").value;
+        auth.signInWithEmailAndPassword(emailInputStr, passwordInputStr)
+            .then((userCredential) => {
+                // onAuthStateChanged will handle UI updates
+            })
+            .catch((error) => {
+                alert("Error: " + error.code + " " + error.message);
+            });
 	}
 }
 
 function logout() {
-	Parse.User.logOut();
-	setElementById("usernameDiv", "log in to begin.");
-	if (sPage == "index.html") {
-		$( ".login-panel" ).show();
-		$( ".content-panel" ).hide();
-	} else if (sPage == "about.html") {
-		$( "#loginBtn" ).show();
-		$( "#beginBtn" ).hide();
-	}
+    auth.signOut().then(() => {
+        // onAuthStateChanged will handle UI updates
+    }).catch((error) => {
+        alert("Error logging out: " + error.message);
+    });
 }
-
-/*
-function resetPassword() {
-	currentUser = Parse.User.current();
-	email = $("#changeEmailInput").val().toLowerCase();
-	Parse.User.requestPasswordReset(email, {
-		success: function() {
-	alert("Password reset request sent to " + email + ".");
-		},
-		error: function(error) {
-			alert("Error: " + error.code + " " + error.message);
-		}
-	});
-}
-*/
 
 function populateList() {
-	var currentUser = Parse.User.current();
-	var outOfRange = "";
-	var now = new Date().getTime()/365.25/24/60/60/1000;
-	var currentUserAge = (now - currentUser.get('DOB')/365.25/24/60/60/1000).toFixed(2);
-	var currentUserLowerRange = ((currentUserAge/2)+7).toFixed(2);
-	var currentUserUpperRange = ((currentUserAge-7)*2).toFixed(2);
-	var alternatingNumber = 0;
-	var alternatingColor = 0;
-	var list = "";
-	list = list + "<ul><div style='clear:both;'></div>";
-	currentUser = Parse.User.current();
-	var Person = Parse.Object.extend("Person");
-	var query = new Parse.Query(Person);
-	query.equalTo("user", currentUser);
-	query.ascending("name");
-	query.find({
-	success: function(results) {
-		for (var i = 0; i < results.length; i++) {
-			alternatingNumber++;
-			var object = results[i];
-			var dob = object.get('DOB');
-			var day = dob.getDate();
-			var month = dob.getMonth()+1;
-			var year = dob.getFullYear();
-			var age = (now-dob/365.25/24/60/60/1000).toFixed(2);
-			var lowerRange = ((age/2)+7).toFixed(2);
-			var upperRange = ((age-7)*2).toFixed(2);
-			if (alternatingNumber % 2 == 0) {
-				alternatingColor = "fafafa";
-			} else {
-				alternatingColor = "f0f0f0";
-			}
-			if (age<currentUserLowerRange||age>currentUserUpperRange) {
-				outOfRange = "<i style='color:#eee;left:-2em;top:-3.5em;background:#e30c00;border-radius:1in;padding:1em;'";
-				outOfRange = outOfRange + "class='float-left glyphicon glyphicon-thumbs-down'></i>";
-			} else {
-				outOfRange = "<i style='color:#eee;left:-2em;top:-3.5em;background:#4d80cc;border-radius:1in;padding:1em;'";
-				outOfRange = outOfRange + "class='float-left glyphicon glyphicon-thumbs-up'></i>";
-			}
-			list = list + "<li class='" + object.id + "' style='background: #"+ alternatingColor +" ;'>";
-			list = list + "<i data-id='" + object.id + "' class='li-remove float-right glyphicon glyphicon-remove-circle'></i>";
-			list = list + "<div class='stealth'><span>" + outOfRange + "</span></div>";
-			list = list + "<span class='quarter name'>" + object.get('name') + "</span>";
-			list = list + "<span class='quarter age'>" + age + "</span>";
-			list = list + "<span class='quarter dob'>" + month + "/" + day + "/" + year + "</span>";
-			list = list + "<span class='quarter range'>" + lowerRange + "-" +  upperRange + "</span>";
-			list = list + "<div style='clear:both;'><br></div>";
-		}
-		list = list + "</ul>";
-		setElementById("list", list);
-		populateProfile();
-	},
-	error: function(error) {
-		alert("Error: " + error.code + " " + error.message);
-	}
-	});
+    if (!userId) return;
+    
+    db.collection("users").doc(userId).get().then((userDoc) => {
+        var currentUserData = userDoc.data();
+        if (!currentUserData) return;
+        
+        var outOfRange = "";
+        var now = new Date().getTime()/365.25/24/60/60/1000;
+        
+        var userDOB = currentUserData.DOB ? currentUserData.DOB.toDate() : new Date();
+        var currentUserAge = (now - userDOB.getTime()/365.25/24/60/60/1000).toFixed(2);
+        var currentUserLowerRange = ((currentUserAge/2)+7).toFixed(2);
+        var currentUserUpperRange = ((currentUserAge-7)*2).toFixed(2);
+        var alternatingNumber = 0;
+        var alternatingColor = 0;
+        var list = "";
+        list = list + "<ul><div style='clear:both;'></div>";
+        
+        db.collection("persons").where("userId", "==", userId).orderBy("name", "asc").get()
+            .then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    alternatingNumber++;
+                    var object = doc.data();
+                    var objectId = doc.id;
+                    var dob = object.DOB ? object.DOB.toDate() : new Date();
+                    var day = dob.getDate();
+                    var month = dob.getMonth()+1;
+                    var year = dob.getFullYear();
+                    var age = (now - dob.getTime()/365.25/24/60/60/1000).toFixed(2);
+                    var lowerRange = ((age/2)+7).toFixed(2);
+                    var upperRange = ((age-7)*2).toFixed(2);
+                    if (alternatingNumber % 2 == 0) {
+                        alternatingColor = "fafafa";
+                    } else {
+                        alternatingColor = "f0f0f0";
+                    }
+                    if (age<currentUserLowerRange||age>currentUserUpperRange) {
+                        outOfRange = "<i style='color:#eee;left:-2em;top:-3.5em;background:#e30c00;border-radius:1in;padding:1em;'";
+                        outOfRange = outOfRange + "class='float-left glyphicon glyphicon-thumbs-down'></i>";
+                    } else {
+                        outOfRange = "<i style='color:#eee;left:-2em;top:-3.5em;background:#4d80cc;border-radius:1in;padding:1em;'";
+                        outOfRange = outOfRange + "class='float-left glyphicon glyphicon-thumbs-up'></i>";
+                    }
+                    list = list + "<li class='" + objectId + "' style='background: #"+ alternatingColor +" ;'>";
+                    list = list + "<i data-id='" + objectId + "' class='li-remove float-right glyphicon glyphicon-remove-circle'></i>";
+                    list = list + "<div class='stealth'><span>" + outOfRange + "</span></div>";
+                    list = list + "<span class='quarter name'>" + object.name + "</span>";
+                    list = list + "<span class='quarter age'>" + age + "</span>";
+                    list = list + "<span class='quarter dob'>" + month + "/" + day + "/" + year + "</span>";
+                    list = list + "<span class='quarter range'>" + lowerRange + "-" +  upperRange + "</span>";
+                    list = list + "<div style='clear:both;'><br></div>";
+                });
+                
+                list = list + "</ul>";
+                setElementById("list", list);
+                populateProfile(currentUserData);
+            })
+            .catch((error) => {
+                if (error.code === 'failed-precondition' || error.message.includes('index')) {
+                    // Index error might happen because of orderBy. Fallback to client-side sort
+                    db.collection("persons").where("userId", "==", userId).get().then((snapshot) => {
+                        let docs = [];
+                        snapshot.forEach(d => {
+                            let obj = d.data();
+                            obj.id = d.id;
+                            docs.push(obj);
+                        });
+                        docs.sort((a,b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : ((b.name.toLowerCase() > a.name.toLowerCase()) ? -1 : 0));
+                        
+                        let listFallback = "<ul><div style='clear:both;'></div>";
+                        let altNum = 0;
+                        docs.forEach(object => {
+                            altNum++;
+                            var objectId = object.id;
+                            var dob = object.DOB ? object.DOB.toDate() : new Date();
+                            var day = dob.getDate();
+                            var month = dob.getMonth()+1;
+                            var year = dob.getFullYear();
+                            var age = (now - dob.getTime()/365.25/24/60/60/1000).toFixed(2);
+                            var lowerRange = ((age/2)+7).toFixed(2);
+                            var upperRange = ((age-7)*2).toFixed(2);
+                            let altCol = (altNum % 2 == 0) ? "fafafa" : "f0f0f0";
+                            
+                            let oRange = "";
+                            if (age<currentUserLowerRange||age>currentUserUpperRange) {
+                                oRange = "<i style='color:#eee;left:-2em;top:-3.5em;background:#e30c00;border-radius:1in;padding:1em;'";
+                                oRange = oRange + "class='float-left glyphicon glyphicon-thumbs-down'></i>";
+                            } else {
+                                oRange = "<i style='color:#eee;left:-2em;top:-3.5em;background:#4d80cc;border-radius:1in;padding:1em;'";
+                                oRange = oRange + "class='float-left glyphicon glyphicon-thumbs-up'></i>";
+                            }
+                            listFallback = listFallback + "<li class='" + objectId + "' style='background: #"+ altCol +" ;'>";
+                            listFallback = listFallback + "<i data-id='" + objectId + "' class='li-remove float-right glyphicon glyphicon-remove-circle'></i>";
+                            listFallback = listFallback + "<div class='stealth'><span>" + oRange + "</span></div>";
+                            listFallback = listFallback + "<span class='quarter name'>" + object.name + "</span>";
+                            listFallback = listFallback + "<span class='quarter age'>" + age + "</span>";
+                            listFallback = listFallback + "<span class='quarter dob'>" + month + "/" + day + "/" + year + "</span>";
+                            listFallback = listFallback + "<span class='quarter range'>" + lowerRange + "-" +  upperRange + "</span>";
+                            listFallback = listFallback + "<div style='clear:both;'><br></div>";
+                        });
+                        listFallback += "</ul>";
+                        setElementById("list", listFallback);
+                        populateProfile(currentUserData);
+                    });
+                } else {
+                    alert("Error: " + error.message);
+                }
+            });
+    });
 }
 
-function populateProfile() {
-	currentUser = Parse.User.current();
+function populateProfile(currentUserData) {
 	var now = new Date().getTime()/365.25/24/60/60/1000;	
 	var info = "<div class='profile-panel'><ul>";
-	var dob = currentUser.get('DOB');
+	var dob = currentUserData.DOB ? currentUserData.DOB.toDate() : new Date();
 	var day = dob.getDate();
 	var month = dob.getMonth()+1;
 	var year = dob.getFullYear();
-	var age = (now-dob/365.25/24/60/60/1000).toFixed(2);
+	var age = (now-dob.getTime()/365.25/24/60/60/1000).toFixed(2);
 	var lowerRange = ((age/2)+7).toFixed(2);
 	var upperRange = ((age-7)*2).toFixed(2);
 	info = info + "<li>"
-	info = info + "<span class='quarter'><input id='userNameInput' placeholder='Name' type='text' value='" + capitaliseEveryFirstLetter(currentUser.get('name')) + "'></span>";
-	info = info + "<span class='quarter age'><input id='userAgeInput' placeholder='Name' type='number' value='" + age + "'></span>";
-	info = info + "<span class='quarter dob'><input id='userDobInput' placeholder='Name' type='datetime' value='" + month + "/" + day + "/" + year + "'></span>";
+	info = info + "<span class='quarter'><input id='userNameInput' placeholder='Name' type='text' value='" + capitaliseEveryFirstLetter(currentUserData.name || "") + "'></span>";
+	info = info + "<span class='quarter age'><input id='userAgeInput' placeholder='Age' type='number' value='" + age + "'></span>";
+	info = info + "<span class='quarter dob'><input id='userDobInput' placeholder='DOB' type='datetime' value='" + month + "/" + day + "/" + year + "'></span>";
 	info = info + "<span style='color:black;' class='quarter range'>";
 	info = info + "<span class='half'><b>Range</b><br>" + lowerRange + "-" +  upperRange + "</span>";
     info = info + "<span class='half'></span></span></li></ul></div>";
 
 	setElementById("profile", info);
 
-    $( ".li-remove" ).on( "click", function() {
+    $( ".li-remove" ).off("click").on( "click", function() {
 		$ ( this ).parent().addClass( "deleting" );
 		$ ( this ).parent().removeClass( "rowHover" );		
 		remove( $( this ).data('id') );
 	});	
     $( "li" ).hover(
   		function() {
-    $( this ).addClass( "rowHover" );
-    $( this ).find(".stealth i").addClass( "opaque" );
+            $( this ).addClass( "rowHover" );
+            $( this ).find(".stealth i").addClass( "opaque" );
   		}, function() {
-    $( this ).removeClass( "rowHover" );
-    $( this ).find(".stealth i").removeClass( "opaque" );
+            $( this ).removeClass( "rowHover" );
+            $( this ).find(".stealth i").removeClass( "opaque" );
   		}
 	);
-    $( ".updateSelf" ).on( "click", function() {
+    $( ".updateSelf" ).off("click").on( "click", function() {
 		updateSelf();
 	});	
-	$( "#userNameInput" ).keyup(function( event ) {
+	$( "#userNameInput" ).off("keyup").keyup(function( event ) {
 		var keycode = (event.keyCode ? event.keyCode : event.which);
 		if ( keycode == 13 ) {
 			updateSelf();
 		}
 	});
-	$( "#userDobInput" ).keyup(function( event ) {
+	$( "#userDobInput" ).off("keyup").keyup(function( event ) {
 		var now = new Date().getTime()/365.25/24/60/60/1000;	
 		var dob = new Date( $('#userDobInput').val() );
 		var age = (now-(Date.parse((dob))/365.25/24/60/60/1000)).toFixed(2);
@@ -274,7 +323,7 @@ function populateProfile() {
 			updateSelf();
 		}
 	});
-	$( "#userAgeInput" ).keyup(function( event ) {
+	$( "#userAgeInput" ).off("keyup").keyup(function( event ) {
 		var now = new Date().getTime();
 		var age = $('#userAgeInput').val()*365.25*24*60*60*1000;
 		var date = new Date(now-age);
@@ -293,78 +342,44 @@ function populateProfile() {
 }
 
 function updateSelf() {
-	currentUser = Parse.User.current();
-	var User = Parse.Object.extend("User");
-	var user = new Parse.Query(User);
-	user.get(currentUser.id, {
-		success: function(user) {
-			var name = $('#userNameInput').val();
-			var age = $('#userAgeInput').val();
-			var dob = new Date( $('#userDobInput').val() );
-			user.set("user", user);
-			user.set("name", name.toLowerCase());
-			user.set("DOB", dob);
-			currentUser.set("user", user);
-			currentUser.set("name", name.toLowerCase());
-			currentUser.set("DOB", dob);
-			currentUser.save();
-			user.save(null, {
-				success: function(user) {
-					populateList();
-				},
-				error: function(user, error) {
-				}
-			});
-		},
-		error: function(object, error) {
-		}
-	});
+    if (!userId) return;
+    var name = $('#userNameInput').val().toLowerCase();
+    var dob = new Date( $('#userDobInput').val() );
+    
+    db.collection("users").doc(userId).update({
+        name: name,
+        DOB: firebase.firestore.Timestamp.fromDate(dob)
+    }).then(() => {
+        populateList();
+    }).catch((error) => {
+        console.error("Error updating user: ", error);
+    });
 }
 
 function addPerson() {
-	var currentUser = Parse.User.current();
+    if (!userId) return;
 	var name = $('#nameInput').val();
-	var age = $('#ageInput').val();
 	var dob = new Date( $('#dobInput').val() );
 	
-	var Person = Parse.Object.extend("Person");
-	var person = new Person();
-
-	person.set("user", currentUser);
-	person.set("name", capitaliseFirstLetter(name));
-	person.set("DOB", dob);
-
-	person.save(null, {
-		success: function(person) {
-			newestName = "." + person.id;
-			populateList();
-		},
-		error: function(person, error) {
-		}
-	});
+    db.collection("persons").add({
+        userId: userId,
+        name: capitaliseFirstLetter(name),
+        DOB: firebase.firestore.Timestamp.fromDate(dob)
+    }).then((docRef) => {
+        newestName = "." + docRef.id;
+        populateList();
+    }).catch((error) => {
+        console.error("Error adding person: ", error);
+    });
 }
 
 function remove(id) {
-	var currentUser = Parse.User.current();
-	var Person = Parse.Object.extend("Person");
-	var query = new Parse.Query(Person);
-	query.equalTo("objectId", id);
-	query.find({
-		success: function(results) {
-			var object = results[0];
-			object.destroy({
-				success: function(object) {
-					newestName = "";
-					populateList();
-				},
-				error: function(object, error) {
-				}
-			});			
-	    },
-	    error: function(error) {
-	    	alert("Error: " + error.code + " " + error.message);
-	    }
-	});
+    db.collection("persons").doc(id).delete().then(() => {
+        newestName = "";
+        populateList();
+    }).catch((error) => {
+        alert("Error: " + error.message);
+    });
 }
 
 function scrollTo(ElementValue) {
