@@ -1,11 +1,10 @@
 const firebaseConfig = {
-  // TODO: Replace with actual Firebase config
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyDUYv4vMY4GzZsTeia7sYE0ZNk-siRzmc4",
+  authDomain: "half-plus-seven.firebaseapp.com",
+  projectId: "half-plus-seven",
+  storageBucket: "half-plus-seven.firebasestorage.app",
+  messagingSenderId: "877628237323",
+  appId: "1:877628237323:web:7b4505488300f17954890e"
 };
 
 // Initialize Firebase if it hasn't been initialized
