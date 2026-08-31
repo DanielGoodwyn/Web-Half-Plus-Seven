@@ -70,32 +70,42 @@ $(document).ready(function() {
                 addPerson();
             }
         });
-        $( "#dobInput" ).keyup(function( event ) {
-            var now = new Date().getTime()/365.25/24/60/60/1000;	
-            var dob = new Date( $('#dobInput').val() );
-            var age = (now-(Date.parse((dob))/365.25/24/60/60/1000)).toFixed(2);
-            $( "#ageInput" ).val(age);
-            if (age>14) {
-                var lowerRange = ((age/2)+7).toFixed(2);
-                var upperRange = ((age-7)*2).toFixed(2);
-                setElementById("range", lowerRange + "-" +  upperRange);
-            } else {
-                setElementById("range", "0");
+        $( "#dobInput" ).on("input change", function( event ) {
+            var val = $('#dobInput').val();
+            if (!val) return;
+            var parts = val.split('-');
+            if(parts.length === 3) {
+                var dob = new Date(parts[0], parts[1]-1, parts[2]);
+                var now = new Date();
+                var age = ((now.getTime() - dob.getTime())/365.25/24/60/60/1000).toFixed(2);
+                if ($( "#ageInput" ).val() != age) {
+                    $( "#ageInput" ).val(age);
+                }
+                if (age>14) {
+                    var lowerRange = ((age/2)+7).toFixed(2);
+                    var upperRange = ((age-7)*2).toFixed(2);
+                    setElementById("range", lowerRange + "-" +  upperRange);
+                } else {
+                    setElementById("range", "0");
+                }
             }
-            var keycode = (event.keyCode ? event.keyCode : event.which);
-            if ( keycode == 13 ) {
-                addPerson();
-            }
+        }).keyup(function(event) {
+            if ( (event.keyCode ? event.keyCode : event.which) == 13 ) addPerson();
         });
-        $( "#ageInput" ).keyup(function( event ) {
+
+        $( "#ageInput" ).on("input change", function( event ) {
             var now = new Date().getTime();
             var age = $('#ageInput').val();
-            var dob = age*365.25*24*60*60*1000;
-            var date = new Date(now-dob);
-            var day = date.getDate();
-            var month = date.getMonth()+1;
+            if (!age) return;
+            var dobMs = age*365.25*24*60*60*1000;
+            var date = new Date(now-dobMs);
+            var day = ("0" + date.getDate()).slice(-2);
+            var month = ("0" + (date.getMonth()+1)).slice(-2);
             var year = date.getFullYear();
-            $( "#dobInput" ).val( month + "/" + day + "/" + year );
+            var dString = year + "-" + month + "-" + day;
+            if ($( "#dobInput" ).val() != dString) {
+                $( "#dobInput" ).val(dString);
+            }
             if (age>14) {
                 var lowerRange = ((age/2)+7).toFixed(2);
                 var upperRange = ((age-7)*2).toFixed(2);
@@ -103,10 +113,8 @@ $(document).ready(function() {
             } else {
                 setElementById("range", "0");
             }
-            var keycode = (event.keyCode ? event.keyCode : event.which);
-            if ( keycode == 13 ) {
-                addPerson();
-            }
+        }).keyup(function(event) {
+            if ( (event.keyCode ? event.keyCode : event.which) == 13 ) addPerson();
         });
 	}
 });
@@ -273,8 +281,8 @@ function populateProfile(currentUserData) {
 	var now = new Date().getTime()/365.25/24/60/60/1000;	
 	var info = "<div class='profile-panel'><ul>";
 	var dob = currentUserData.DOB ? currentUserData.DOB.toDate() : new Date();
-	var day = dob.getDate();
-	var month = dob.getMonth()+1;
+	var day = ("0" + dob.getDate()).slice(-2);
+	var month = ("0" + (dob.getMonth()+1)).slice(-2);
 	var year = dob.getFullYear();
 	var age = (now-dob.getTime()/365.25/24/60/60/1000).toFixed(2);
 	var lowerRange = ((age/2)+7).toFixed(2);
@@ -282,7 +290,7 @@ function populateProfile(currentUserData) {
 	info = info + "<li>"
 	info = info + "<span class='quarter'><input id='userNameInput' placeholder='Name' type='text' value='" + capitaliseEveryFirstLetter(currentUserData.name || "") + "'></span>";
 	info = info + "<span class='quarter age'><input id='userAgeInput' placeholder='Age' type='number' value='" + age + "'></span>";
-	info = info + "<span class='quarter dob'><input id='userDobInput' placeholder='DOB' type='datetime' value='" + month + "/" + day + "/" + year + "'></span>";
+	info = info + "<span class='quarter dob'><input id='userDobInput' placeholder='DOB' type='date' value='" + year + "-" + month + "-" + day + "'></span>";
 	info = info + "<span style='color:black;' class='quarter range'>";
 	info = info + "<span class='half'><b>Range</b><br>" + lowerRange + "-" +  upperRange + "</span>";
     info = info + "<span class='half'></span></span></li></ul></div>";
@@ -303,37 +311,45 @@ function populateProfile(currentUserData) {
             $( this ).find(".stealth i").removeClass( "opaque" );
   		}
 	);
-    $( ".updateSelf" ).off("click").on( "click", function() {
-		updateSelf();
-	});	
-	$( "#userNameInput" ).off("keyup").keyup(function( event ) {
-		var keycode = (event.keyCode ? event.keyCode : event.which);
-		if ( keycode == 13 ) {
-			updateSelf();
-		}
+    
+    // Automatically save profile when input changes
+    var profileSaveTimeout;
+    function triggerSave() {
+        clearTimeout(profileSaveTimeout);
+        profileSaveTimeout = setTimeout(updateSelf, 500);
+    }
+    
+	$( "#userNameInput" ).off("input change").on("input change", function() {
+        triggerSave();
 	});
-	$( "#userDobInput" ).off("keyup").keyup(function( event ) {
-		var now = new Date().getTime()/365.25/24/60/60/1000;	
-		var dob = new Date( $('#userDobInput').val() );
-		var age = (now-(Date.parse((dob))/365.25/24/60/60/1000)).toFixed(2);
-		$( "#userAgeInput" ).val(age);
-		var keycode = (event.keyCode ? event.keyCode : event.which);
-		if ( keycode == 13 ) {
-			updateSelf();
-		}
+	$( "#userDobInput" ).off("input change").on("input change", function() {
+        var val = $('#userDobInput').val();
+        if (!val) return;
+        var parts = val.split('-');
+        if (parts.length === 3) {
+            var newDob = new Date(parts[0], parts[1]-1, parts[2]);
+            var newNow = new Date();
+            var newAge = ((newNow.getTime() - newDob.getTime())/365.25/24/60/60/1000).toFixed(2);
+            if ($( "#userAgeInput" ).val() != newAge) {
+                $( "#userAgeInput" ).val(newAge);
+            }
+            triggerSave();
+        }
 	});
-	$( "#userAgeInput" ).off("keyup").keyup(function( event ) {
-		var now = new Date().getTime();
-		var age = $('#userAgeInput').val()*365.25*24*60*60*1000;
-		var date = new Date(now-age);
-		var day = date.getDate();
-		var month = date.getMonth()+1;
-		var year = date.getFullYear();
-		$( "#userDobInput" ).val( month + "/" + day + "/" + year );
-		var keycode = (event.keyCode ? event.keyCode : event.which);
-		if ( keycode == 13 ) {
-			updateSelf();
-		}
+	$( "#userAgeInput" ).off("input change").on("input change", function() {
+		var newNow = new Date().getTime();
+		var newAge = $('#userAgeInput').val();
+        if (!newAge) return;
+		var dobMs = newAge*365.25*24*60*60*1000;
+		var date = new Date(newNow-dobMs);
+		var newDay = ("0" + date.getDate()).slice(-2);
+		var newMonth = ("0" + (date.getMonth()+1)).slice(-2);
+		var newYear = date.getFullYear();
+        var dString = newYear + "-" + newMonth + "-" + newDay;
+        if ($( "#userDobInput" ).val() != dString) {
+		    $( "#userDobInput" ).val( dString );
+        }
+		triggerSave();
 	});
 	if (newestName != "") {
 		scrollTo(newestName);	
@@ -343,7 +359,10 @@ function populateProfile(currentUserData) {
 function updateSelf() {
     if (!userId) return;
     var name = $('#userNameInput').val().toLowerCase();
-    var dob = new Date( $('#userDobInput').val() );
+    var val = $('#userDobInput').val();
+    if (!val) return;
+    var parts = val.split('-');
+    var dob = new Date(parts[0], parts[1]-1, parts[2]);
     
     db.collection("users").doc(userId).update({
         name: name,
@@ -358,7 +377,10 @@ function updateSelf() {
 function addPerson() {
     if (!userId) return;
 	var name = $('#nameInput').val();
-	var dob = new Date( $('#dobInput').val() );
+    var val = $('#dobInput').val();
+    if (!val) return;
+    var parts = val.split('-');
+	var dob = new Date(parts[0], parts[1]-1, parts[2]);
 	
     db.collection("persons").add({
         userId: userId,
