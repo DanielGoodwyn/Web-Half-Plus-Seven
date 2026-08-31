@@ -129,10 +129,15 @@ function authenticate(e) {
             return;
         }
 
-        auth.fetchSignInMethodsForEmail(emailInputStr)
-            .then((signInMethods) => {
-                if (signInMethods.length === 0) {
-                    // User does not exist, sign them up
+        // Try to log in first
+        auth.signInWithEmailAndPassword(emailInputStr, passwordInputStr)
+            .then((userCredential) => {
+                // onAuthStateChanged will handle UI updates
+            })
+            .catch((loginError) => {
+                // If login fails because user doesn't exist or wrong password
+                if (loginError.code === 'auth/invalid-credential' || loginError.code === 'auth/user-not-found' || loginError.code === 'auth/wrong-password') {
+                    // Try to sign them up instead
                     auth.createUserWithEmailAndPassword(emailInputStr, passwordInputStr)
                         .then((userCredential) => {
                             var user = userCredential.user;
@@ -145,22 +150,17 @@ function authenticate(e) {
                                 // onAuthStateChanged will handle UI updates
                             });
                         })
-                        .catch((error) => {
-                            alert("Sign up error: " + error.message);
+                        .catch((signupError) => {
+                            // If sign up fails because the email is in use, it means they just typed the wrong password!
+                            if (signupError.code === 'auth/email-already-in-use') {
+                                alert("Login failed: Incorrect password. Please try again or use Forgot Password.");
+                            } else {
+                                alert("Error: " + signupError.message);
+                            }
                         });
                 } else {
-                    // User exists, log them in
-                    auth.signInWithEmailAndPassword(emailInputStr, passwordInputStr)
-                        .then((userCredential) => {
-                            // onAuthStateChanged will handle UI updates
-                        })
-                        .catch((error) => {
-                            alert("Login error: " + error.message);
-                        });
+                    alert("Error: " + loginError.message);
                 }
-            })
-            .catch((error) => {
-                alert("Error checking email: " + error.message);
             });
 	}
 }
