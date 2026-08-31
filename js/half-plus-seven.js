@@ -119,42 +119,65 @@ $(document).ready(function() {
 	}
 });
 
-function signup(e) {
+function authenticate(e) {
 	if (e.keyCode == 13 || e == "click") {
-		emailInputStr = document.getElementById("emailInput").value.toLowerCase();
-		passwordInputStr = document.getElementById("passwordInput").value;
+		var emailInputStr = document.getElementById("emailInput").value.toLowerCase();
+		var passwordInputStr = document.getElementById("passwordInput").value;
         
-        auth.createUserWithEmailAndPassword(emailInputStr, passwordInputStr)
-            .then((userCredential) => {
-                var user = userCredential.user;
-                var dob = new Date();
-                db.collection("users").doc(user.uid).set({
-                    email: emailInputStr,
-                    name: emailInputStr,
-                    DOB: firebase.firestore.Timestamp.fromDate(dob)
-                }).then(() => {
-                    // onAuthStateChanged will handle UI updates
-                });
+        if (!emailInputStr || !passwordInputStr) {
+            alert("Please enter both email and password.");
+            return;
+        }
+
+        auth.fetchSignInMethodsForEmail(emailInputStr)
+            .then((signInMethods) => {
+                if (signInMethods.length === 0) {
+                    // User does not exist, sign them up
+                    auth.createUserWithEmailAndPassword(emailInputStr, passwordInputStr)
+                        .then((userCredential) => {
+                            var user = userCredential.user;
+                            var dob = new Date();
+                            db.collection("users").doc(user.uid).set({
+                                email: emailInputStr,
+                                name: emailInputStr,
+                                DOB: firebase.firestore.Timestamp.fromDate(dob)
+                            }).then(() => {
+                                // onAuthStateChanged will handle UI updates
+                            });
+                        })
+                        .catch((error) => {
+                            alert("Sign up error: " + error.message);
+                        });
+                } else {
+                    // User exists, log them in
+                    auth.signInWithEmailAndPassword(emailInputStr, passwordInputStr)
+                        .then((userCredential) => {
+                            // onAuthStateChanged will handle UI updates
+                        })
+                        .catch((error) => {
+                            alert("Login error: " + error.message);
+                        });
+                }
             })
             .catch((error) => {
-                // If user exists or other error, try to login
-                login('click');
+                alert("Error checking email: " + error.message);
             });
 	}
 }
 
-function login(e) {
-	if (e.keyCode == 13 || e == "click") {
-		emailInputStr = document.getElementById("emailInput").value.toLowerCase();
-		passwordInputStr = document.getElementById("passwordInput").value;
-        auth.signInWithEmailAndPassword(emailInputStr, passwordInputStr)
-            .then((userCredential) => {
-                // onAuthStateChanged will handle UI updates
-            })
-            .catch((error) => {
-                alert("Error: " + error.code + " " + error.message);
-            });
-	}
+function forgotPassword() {
+    var emailInputStr = document.getElementById("emailInput").value.toLowerCase();
+    if (!emailInputStr) {
+        alert("Please enter your email address first, then click 'Forgot password?'.");
+        return;
+    }
+    auth.sendPasswordResetEmail(emailInputStr)
+        .then(() => {
+            alert("Password reset email sent to " + emailInputStr + "!");
+        })
+        .catch((error) => {
+            alert("Error: " + error.message);
+        });
 }
 
 function logout() {

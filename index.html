@@ -64,10 +64,14 @@
           <div class="panel-body">
             <div class="row">
               <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <input type="email" id="emailInput" placeholder="email" onkeypress="return signup(event)">
-                <input type="password" id="passwordInput" placeholder="password" onkeypress="return signup(event)">
-              <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <button class="btn btn-primary" id="loginBtn" onclick="signup('click')">begin</button>
+                <input type="email" id="emailInput" placeholder="email" onkeypress="return authenticate(event)">
+                <input type="password" id="passwordInput" placeholder="password" onkeypress="return authenticate(event)">
+              </div>
+              <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="margin-top: 15px;">
+                <button class="btn btn-primary" id="loginBtn" onclick="authenticate('click')">begin</button>
+                <div style="margin-top: 15px;">
+                  <a href="#" onclick="forgotPassword(); return false;">Forgot password?</a>
+                </div>
               </div>
             </div>
           </div>
