@@ -145,7 +145,7 @@ function authenticate(e) {
                             db.collection("users").doc(user.uid).set({
                                 email: emailInputStr,
                                 name: emailInputStr,
-                                DOB: firebase.firestore.Timestamp.fromDate(dob)
+                                dob: firebase.firestore.Timestamp.fromDate(dob)
                             }).then(() => {
                                 // onAuthStateChanged will handle UI updates
                             });
@@ -198,7 +198,7 @@ function populateList() {
         var outOfRange = "";
         var now = new Date().getTime()/365.25/24/60/60/1000;
         
-        var userDOB = currentUserData.DOB ? currentUserData.DOB.toDate() : new Date();
+        var userDOB = currentUserData.dob ? currentUserData.dob.toDate() : new Date();
         var currentUserAge = (now - userDOB.getTime()/365.25/24/60/60/1000).toFixed(2);
         var currentUserLowerRange = ((currentUserAge/2)+7).toFixed(2);
         var currentUserUpperRange = ((currentUserAge-7)*2).toFixed(2);
@@ -213,7 +213,7 @@ function populateList() {
                     alternatingNumber++;
                     var object = doc.data();
                     var objectId = doc.id;
-                    var dob = object.DOB ? object.DOB.toDate() : new Date();
+                    var dob = object.dob ? object.dob.toDate() : new Date();
                     var day = dob.getDate();
                     var month = dob.getMonth()+1;
                     var year = dob.getFullYear();
@@ -263,7 +263,7 @@ function populateList() {
                         docs.forEach(object => {
                             altNum++;
                             var objectId = object.id;
-                            var dob = object.DOB ? object.DOB.toDate() : new Date();
+                            var dob = object.dob ? object.dob.toDate() : new Date();
                             var day = dob.getDate();
                             var month = dob.getMonth()+1;
                             var year = dob.getFullYear();
@@ -303,7 +303,7 @@ function populateList() {
 function populateProfile(currentUserData) {
 	var now = new Date().getTime()/365.25/24/60/60/1000;	
 	var info = "<div class='profile-panel'><ul>";
-	var dob = currentUserData.DOB ? currentUserData.DOB.toDate() : new Date();
+	var dob = currentUserData.dob ? currentUserData.dob.toDate() : new Date();
 	var day = ("0" + dob.getDate()).slice(-2);
 	var month = ("0" + (dob.getMonth()+1)).slice(-2);
 	var year = dob.getFullYear();
@@ -389,7 +389,7 @@ function updateSelf() {
     
     db.collection("users").doc(userId).update({
         name: name,
-        DOB: firebase.firestore.Timestamp.fromDate(dob)
+        dob: firebase.firestore.Timestamp.fromDate(dob)
     }).then(() => {
         populateList();
     }).catch((error) => {
@@ -408,7 +408,7 @@ function addPerson() {
     db.collection("persons").add({
         userId: userId,
         name: capitaliseFirstLetter(name),
-        DOB: firebase.firestore.Timestamp.fromDate(dob)
+        dob: firebase.firestore.Timestamp.fromDate(dob)
     }).then((docRef) => {
         newestName = "." + docRef.id;
         populateList();

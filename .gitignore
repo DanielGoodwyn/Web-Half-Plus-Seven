@@ -1,0 +1,22 @@
+# Environment files
+.env
+
+# Playwright MCP temp files
+.playwright-mcp/
+
+# Debug/temp scripts
+click_app.js
+click_create.js
+click_workflow.js
+click_workflow2.js
+click_xcode_cloud_tab.js
+dump_dom.js
+get_text.js
+get_text2.js
+get_url.js
+inspect.js
+page_dom.html
+xcode_cloud.js
+xcode_cloud.png
+xcode_cloud_dom.html
+screenshot.png
