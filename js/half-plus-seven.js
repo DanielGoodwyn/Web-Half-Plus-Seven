@@ -188,117 +188,103 @@ function logout() {
     });
 }
 
+var usersUnsubscribe = null;
+var webPersonsUnsubscribe = null;
+var legacyPersonsUnsubscribe = null;
+
+var globalUserData = null;
+var globalWebDocs = [];
+var globalLegacyDocs = [];
+
 function populateList() {
     if (!userId) return;
     
-    db.collection("users").doc(userId).get().then((userDoc) => {
-        var currentUserData = userDoc.data();
-        if (!currentUserData) return;
-        
-        var outOfRange = "";
-        var now = new Date().getTime()/365.25/24/60/60/1000;
-        
-        var userDOB = currentUserData.dob ? currentUserData.dob.toDate() : new Date();
-        var currentUserAge = (now - userDOB.getTime()/365.25/24/60/60/1000).toFixed(2);
-        var currentUserLowerRange = ((currentUserAge/2)+7).toFixed(2);
-        var currentUserUpperRange = ((currentUserAge-7)*2).toFixed(2);
-        var alternatingNumber = 0;
-        var alternatingColor = 0;
-        var list = "";
-        list = list + "<ul><div style='clear:both;'></div>";
-        
-        db.collection("persons").where("userId", "==", userId).orderBy("name", "asc").get()
-            .then((querySnapshot) => {
-                querySnapshot.forEach((doc) => {
-                    alternatingNumber++;
-                    var object = doc.data();
-                    var objectId = doc.id;
-                    var dob = object.dob ? object.dob.toDate() : new Date();
-                    var day = dob.getDate();
-                    var month = dob.getMonth()+1;
-                    var year = dob.getFullYear();
-                    var age = (now - dob.getTime()/365.25/24/60/60/1000).toFixed(2);
-                    var lowerRange = ((age/2)+7).toFixed(2);
-                    var upperRange = ((age-7)*2).toFixed(2);
-                    if (alternatingNumber % 2 == 0) {
-                        alternatingColor = "fafafa";
-                    } else {
-                        alternatingColor = "f0f0f0";
-                    }
-                    if (age<currentUserLowerRange||age>currentUserUpperRange) {
-                        outOfRange = "<i style='color:#eee;left:-2em;top:-3.5em;background:#e30c00;border-radius:1in;padding:1em;'";
-                        outOfRange = outOfRange + "class='float-left glyphicon glyphicon-thumbs-down'></i>";
-                    } else {
-                        outOfRange = "<i style='color:#eee;left:-2em;top:-3.5em;background:#4d80cc;border-radius:1in;padding:1em;'";
-                        outOfRange = outOfRange + "class='float-left glyphicon glyphicon-thumbs-up'></i>";
-                    }
-                    list = list + "<li class='" + objectId + "' style='background: #"+ alternatingColor +" ;'>";
-                    list = list + "<i data-id='" + objectId + "' class='li-remove float-right glyphicon glyphicon-remove-circle'></i>";
-                    list = list + "<div class='stealth'><span>" + outOfRange + "</span></div>";
-                    list = list + "<span class='quarter name'>" + object.name + "</span>";
-                    list = list + "<span class='quarter age'>" + age + "</span>";
-                    list = list + "<span class='quarter dob'>" + month + "/" + day + "/" + year + "</span>";
-                    list = list + "<span class='quarter range'>" + lowerRange + "-" +  upperRange + "</span>";
-                    list = list + "<div style='clear:both;'><br></div>";
-                });
-                
-                list = list + "</ul>";
-                setElementById("list", list);
-                populateProfile(currentUserData);
-            })
-            .catch((error) => {
-                if (error.code === 'failed-precondition' || error.message.includes('index')) {
-                    // Index error might happen because of orderBy. Fallback to client-side sort
-                    db.collection("persons").where("userId", "==", userId).get().then((snapshot) => {
-                        let docs = [];
-                        snapshot.forEach(d => {
-                            let obj = d.data();
-                            obj.id = d.id;
-                            docs.push(obj);
-                        });
-                        docs.sort((a,b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : ((b.name.toLowerCase() > a.name.toLowerCase()) ? -1 : 0));
-                        
-                        let listFallback = "<ul><div style='clear:both;'></div>";
-                        let altNum = 0;
-                        docs.forEach(object => {
-                            altNum++;
-                            var objectId = object.id;
-                            var dob = object.dob ? object.dob.toDate() : new Date();
-                            var day = dob.getDate();
-                            var month = dob.getMonth()+1;
-                            var year = dob.getFullYear();
-                            var age = (now - dob.getTime()/365.25/24/60/60/1000).toFixed(2);
-                            var lowerRange = ((age/2)+7).toFixed(2);
-                            var upperRange = ((age-7)*2).toFixed(2);
-                            let altCol = (altNum % 2 == 0) ? "fafafa" : "f0f0f0";
-                            
-                            let oRange = "";
-                            if (age<currentUserLowerRange||age>currentUserUpperRange) {
-                                oRange = "<i style='color:#eee;left:-2em;top:-3.5em;background:#e30c00;border-radius:1in;padding:1em;'";
-                                oRange = oRange + "class='float-left glyphicon glyphicon-thumbs-down'></i>";
-                            } else {
-                                oRange = "<i style='color:#eee;left:-2em;top:-3.5em;background:#4d80cc;border-radius:1in;padding:1em;'";
-                                oRange = oRange + "class='float-left glyphicon glyphicon-thumbs-up'></i>";
-                            }
-                            listFallback = listFallback + "<li class='" + objectId + "' style='background: #"+ altCol +" ;'>";
-                            listFallback = listFallback + "<i data-id='" + objectId + "' class='li-remove float-right glyphicon glyphicon-remove-circle'></i>";
-                            listFallback = listFallback + "<div class='stealth'><span>" + oRange + "</span></div>";
-                            listFallback = listFallback + "<span class='quarter name'>" + object.name + "</span>";
-                            listFallback = listFallback + "<span class='quarter age'>" + age + "</span>";
-                            listFallback = listFallback + "<span class='quarter dob'>" + month + "/" + day + "/" + year + "</span>";
-                            listFallback = listFallback + "<span class='quarter range'>" + lowerRange + "-" +  upperRange + "</span>";
-                            listFallback = listFallback + "<div style='clear:both;'><br></div>";
-                        });
-                        listFallback += "</ul>";
-                        setElementById("list", listFallback);
-                        populateProfile(currentUserData);
-                    });
-                } else {
-                    alert("Error: " + error.message);
-                }
-            });
+    if (usersUnsubscribe) usersUnsubscribe();
+    if (webPersonsUnsubscribe) webPersonsUnsubscribe();
+    if (legacyPersonsUnsubscribe) legacyPersonsUnsubscribe();
+    
+    usersUnsubscribe = db.collection("users").doc(userId).onSnapshot((userDoc) => {
+        globalUserData = userDoc.data();
+        if (globalUserData) {
+            username = globalUserData.name || globalUserData.email;
+            setElementById("usernameDiv", "<b>" + username + "</b>");
+        }
+        renderWebList();
+    });
+    
+    webPersonsUnsubscribe = db.collection("persons").where("userId", "==", userId).onSnapshot((snapshot) => {
+        globalWebDocs = [];
+        snapshot.forEach(doc => globalWebDocs.push(doc));
+        renderWebList();
+    });
+    
+    legacyPersonsUnsubscribe = db.collection("persons").where("user", "==", userId).onSnapshot((snapshot) => {
+        globalLegacyDocs = [];
+        snapshot.forEach(doc => globalLegacyDocs.push(doc));
+        renderWebList();
     });
 }
+
+function renderWebList() {
+    if (!globalUserData) return;
+    
+    var now = new Date().getTime()/365.25/24/60/60/1000;
+    
+    var userDOB = globalUserData.dob ? globalUserData.dob.toDate() : new Date();
+    var currentUserAge = (now - userDOB.getTime()/365.25/24/60/60/1000).toFixed(2);
+    var currentUserLowerRange = ((currentUserAge/2)+7).toFixed(2);
+    var currentUserUpperRange = ((currentUserAge-7)*2).toFixed(2);
+    
+    let allDocs = [...globalWebDocs, ...globalLegacyDocs];
+    let uniqueDocsMap = new Map();
+    allDocs.forEach(d => {
+        uniqueDocsMap.set(d.id, d);
+    });
+    
+    let docs = Array.from(uniqueDocsMap.values());
+    
+    docs.sort((a,b) => {
+        let nameA = (a.data().name || "").toLowerCase();
+        let nameB = (b.data().name || "").toLowerCase();
+        return (nameA > nameB) ? 1 : ((nameB > nameA) ? -1 : 0);
+    });
+    
+    var list = "<ul><div style='clear:both;'></div>";
+    var altNum = 0;
+    
+    docs.forEach(doc => {
+        altNum++;
+        var object = doc.data();
+        var objectId = doc.id;
+        var dob = object.dob ? object.dob.toDate() : new Date();
+        var day = dob.getDate();
+        var month = dob.getMonth()+1;
+        var year = dob.getFullYear();
+        var age = (now - dob.getTime()/365.25/24/60/60/1000).toFixed(2);
+        var lowerRange = ((age/2)+7).toFixed(2);
+        var upperRange = ((age-7)*2).toFixed(2);
+        let altCol = (altNum % 2 == 0) ? "fafafa" : "f0f0f0";
+        
+        let oRange = "";
+        if (age<currentUserLowerRange||age>currentUserUpperRange) {
+            oRange = "<i style='color:#eee;left:-2em;top:-3.5em;background:#e30c00;border-radius:1in;padding:1em;' class='float-left glyphicon glyphicon-thumbs-down'></i>";
+        } else {
+            oRange = "<i style='color:#eee;left:-2em;top:-3.5em;background:#4d80cc;border-radius:1in;padding:1em;' class='float-left glyphicon glyphicon-thumbs-up'></i>";
+        }
+        list += "<li class='" + objectId + "' style='background: #"+ altCol +" ;'>";
+        list += "<i data-id='" + objectId + "' class='li-remove float-right glyphicon glyphicon-remove-circle'></i>";
+        list += "<div class='stealth'><span>" + oRange + "</span></div>";
+        list += "<span class='quarter name'>" + object.name + "</span>";
+        list += "<span class='quarter age'>" + age + "</span>";
+        list += "<span class='quarter dob'>" + month + "/" + day + "/" + year + "</span>";
+        list += "<span class='quarter range'>" + lowerRange + "-" +  upperRange + "</span>";
+        list += "<div style='clear:both;'><br></div>";
+    });
+    
+    list += "</ul>";
+    setElementById("list", list);
+    populateProfile(globalUserData);
+};
 
 function populateProfile(currentUserData) {
 	var now = new Date().getTime()/365.25/24/60/60/1000;	
@@ -390,10 +376,8 @@ function updateSelf() {
     db.collection("users").doc(userId).update({
         name: name,
         dob: firebase.firestore.Timestamp.fromDate(dob)
-    }).then(() => {
-        populateList();
     }).catch((error) => {
-        console.error("Error updating user: ", error);
+        alert("Error updating profile: " + error.message);
     });
 }
 
@@ -411,18 +395,14 @@ function addPerson() {
         dob: firebase.firestore.Timestamp.fromDate(dob)
     }).then((docRef) => {
         newestName = "." + docRef.id;
-        populateList();
     }).catch((error) => {
         console.error("Error adding person: ", error);
     });
 }
 
-function remove(id) {
-    db.collection("persons").doc(id).delete().then(() => {
-        newestName = "";
-        populateList();
-    }).catch((error) => {
-        alert("Error: " + error.message);
+function remove(personId) {
+    db.collection("persons").doc(personId).delete().catch((error) => {
+        alert("Error deleting person: " + error.message);
     });
 }
 
