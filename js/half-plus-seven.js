@@ -136,7 +136,7 @@ function authenticate(e) {
             })
             .catch((loginError) => {
                 // If login fails because user doesn't exist or wrong password
-                if (loginError.code === 'auth/invalid-login-credentials' || loginError.code === 'auth/invalid-credential' || loginError.code === 'auth/user-not-found' || loginError.code === 'auth/wrong-password') {
+                if (loginError.code === 'auth/invalid-login-credentials' || loginError.code === 'auth/invalid-credential' || loginError.code === 'auth/user-not-found' || loginError.code === 'auth/wrong-password' || (loginError.message && loginError.message.includes('INVALID_LOGIN_CREDENTIALS'))) {
                     // Try to sign them up instead
                     auth.createUserWithEmailAndPassword(emailInputStr, passwordInputStr)
                         .then((userCredential) => {
