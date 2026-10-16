@@ -254,3 +254,257 @@ hr {
     padding-top: 1em;
     padding-bottom: 1em;
 }
+
+#list ul li.even-row {
+    background: #fafafa;
+}
+
+#list ul li.odd-row {
+    background: #f0f0f0;
+}
+
+.google-btn {
+    display: inline-flex!important;
+    align-items: center!important;
+    justify-content: center!important;
+    gap: 10px;
+    background: #ffffff!important;
+    color: #3c4043!important;
+    border: 1px solid #dadce0!important;
+    border-radius: 4px!important;
+    padding: 8px 22px!important;
+    font-weight: 500!important;
+    font-size: 14px!important;
+    box-shadow: 0 1px 2px rgba(60,64,67,0.1)!important;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    width: 75%;
+    max-width: 320px;
+}
+
+.google-btn:hover {
+    background: #f7f8f8!important;
+}
+
+.or-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 15px auto 10px auto;
+    max-width: 280px;
+    color: #888;
+}
+
+.or-divider .or-line {
+    flex: 1;
+    border-bottom: 1px solid #ddd;
+}
+
+.or-divider .or-text {
+    padding: 0 10px;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+/* ========================================================
+   Dark / Night Theme - System Preference Detection
+   ======================================================== */
+@media (prefers-color-scheme: dark) {
+    body {
+        background: #14181f!important;
+        color: #a4b1cd!important;
+    }
+
+    /* Glass Navbar */
+    .glass {
+        background: rgba(20, 24, 31, 0.94)!important;
+        border-bottom: solid 1px rgba(255, 255, 255, 0.08)!important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5)!important;
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+    }
+
+    .navbar * a, .navbar * button, .navbar * .btn {
+        color: #f0f4f8!important;
+    }
+
+    .navbar-default .navbar-brand {
+        color: #ffffff!important;
+    }
+
+    .navbar-default .navbar-nav > li > a {
+        color: #c9d4e4!important;
+    }
+
+    .navbar-default .navbar-nav > li > a:hover,
+    .navbar-default .navbar-nav > li > a:focus {
+        color: #ffffff!important;
+    }
+
+    .navbar-default .navbar-toggle {
+        border-color: #323b49!important;
+        background-color: #1a202a!important;
+    }
+
+    .navbar-default .navbar-toggle:hover,
+    .navbar-default .navbar-toggle:focus {
+        background-color: #2b3342!important;
+    }
+
+    .navbar-default .navbar-toggle .icon-bar {
+        background-color: #f0f4f8!important;
+    }
+
+    nav .open, nav .dropdown-toggle {
+        background: rgba(35, 43, 56, 0.95)!important;
+    }
+
+    .dropdown-menu {
+        background-color: #1e242f!important;
+        border: 1px solid #323b49!important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6)!important;
+    }
+
+    .dropdown-menu > li > a {
+        color: #c9d4e4!important;
+    }
+
+    .dropdown-menu > li > a:hover,
+    .dropdown-menu > li > a:focus {
+        background-color: #2b3342!important;
+        color: #ffffff!important;
+    }
+
+    .dropdown-menu .divider {
+        background-color: #323b49!important;
+    }
+
+    /* Panels & Cards */
+    .panel-heading {
+        background: #3b6bb0!important;
+        border-color: #3b6bb0!important;
+        color: #ffffff!important;
+    }
+
+    .panel-body {
+        background: #1c212b!important;
+        color: #e6edf3!important;
+        border: 1px solid #29313e!important;
+        border-top: none!important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+    }
+
+    .about-panel {
+        color: #c9d4e4!important;
+    }
+
+    .about-panel p, .about-panel li {
+        color: #c9d4e4!important;
+    }
+
+    .about-panel b, .about-panel strong {
+        color: #ffffff!important;
+    }
+
+    .profile-panel {
+        background: #222733!important;
+        border-bottom: solid .5ex #3b6bb0!important;
+        color: #e6edf3!important;
+    }
+
+    .profile-panel span, 
+    .profile-panel div, 
+    .profile-panel b,
+    .profile-panel li {
+        color: #e6edf3!important;
+    }
+
+    /* Input Elements */
+    input, 
+    input[type="text"], 
+    input[type="email"], 
+    input[type="password"], 
+    input[type="date"], 
+    input[type="number"] {
+        background: #28303e!important;
+        color: #ffffff!important;
+        border: 1px solid #3c485a!important;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4)!important;
+        color-scheme: dark;
+    }
+
+    input:focus, input:hover {
+        border-color: #4d80cc!important;
+        box-shadow: 0 0 8px rgba(77, 128, 204, 0.5)!important;
+    }
+
+    input::placeholder {
+        color: #768499!important;
+    }
+
+    /* Google Button & Divider in Dark Theme */
+    .google-btn {
+        background: #202632!important;
+        color: #e6edf3!important;
+        border: 1px solid #3c485a!important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4)!important;
+    }
+
+    .google-btn:hover {
+        background: #2a3242!important;
+        border-color: #4d80cc!important;
+    }
+
+    .or-divider .or-line {
+        border-bottom: 1px solid #2f3847!important;
+    }
+
+    .or-divider .or-text {
+        color: #768499!important;
+    }
+
+    /* Links */
+    a {
+        color: #6ea4f5!important;
+    }
+
+    a:hover {
+        color: #9ec2fa!important;
+    }
+
+    /* List of Persons */
+    #list ul {
+        background: #161a22!important;
+    }
+
+    #list ul li {
+        color: #e6edf3!important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    #list ul li.even-row {
+        background: #191d26!important;
+    }
+
+    #list ul li.odd-row {
+        background: #1f2530!important;
+    }
+
+    .rowHover {
+        background: #2d3545!important;
+        color: #ffffff!important;
+    }
+
+    .li-remove {
+        color: #768499!important;
+    }
+
+    .li-remove:hover {
+        color: #ff6b6b!important;
+    }
+
+    .deleting {
+        background: #e30c00!important;
+        color: #ffffff!important;
+    }
+}

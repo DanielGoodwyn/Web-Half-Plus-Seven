@@ -380,7 +380,7 @@ function renderWebList() {
         var age = (now - dob.getTime()/365.25/24/60/60/1000).toFixed(2);
         var lowerRange = ((age/2)+7).toFixed(2);
         var upperRange = ((age-7)*2).toFixed(2);
-        let altCol = (altNum % 2 == 0) ? "fafafa" : "f0f0f0";
+        let rowClass = (altNum % 2 == 0) ? "even-row" : "odd-row";
         
         let oRange = "";
         if (age<currentUserLowerRange||age>currentUserUpperRange) {
@@ -388,7 +388,7 @@ function renderWebList() {
         } else {
             oRange = "<i style='color:#eee;left:-2em;top:-3.5em;background:#4d80cc;border-radius:1in;padding:1em;' class='float-left glyphicon glyphicon-thumbs-up'></i>";
         }
-        list += "<li class='" + objectId + "' style='background: #"+ altCol +" ;'>";
+        list += "<li class='" + objectId + " " + rowClass + "'>";
         list += "<i data-id='" + objectId + "' class='li-remove float-right glyphicon glyphicon-remove-circle'></i>";
         list += "<div class='stealth'><span>" + oRange + "</span></div>";
         list += "<span class='quarter name'>" + object.name + "</span>";
@@ -417,7 +417,7 @@ function populateProfile(currentUserData) {
 	info = info + "<span class='quarter'><input id='userNameInput' placeholder='Name' type='text' value='" + capitaliseEveryFirstLetter(currentUserData.name || "") + "'></span>";
 	info = info + "<span class='quarter age'><input id='userAgeInput' placeholder='Age' type='number' value='" + age + "'></span>";
 	info = info + "<span class='quarter dob'><input id='userDobInput' placeholder='DOB' type='date' value='" + year + "-" + month + "-" + day + "'></span>";
-	info = info + "<span style='color:black;' class='quarter range'>";
+	info = info + "<span class='quarter range'>";
 	info = info + "<span class='half'><b>Range</b><br>" + lowerRange + "-" +  upperRange + "</span>";
     info = info + "<span class='half'></span></span></li></ul></div>";
 
