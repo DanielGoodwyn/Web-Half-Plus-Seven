@@ -27,24 +27,34 @@ var sPage = sPath.substring(sPath.lastIndexOf('/') + 1);
 var newestName = "";
 
 $(document).ready(function() {
+    auth.getRedirectResult().then(function(result) {
+        if (result && result.user) {
+            handleUserPostAuth(result.user);
+        }
+    }).catch(function(error) {
+        console.warn("Redirect result error:", error);
+    });
+
     auth.onAuthStateChanged(function(user) {
         if (user) {
             userId = user.uid;
-            db.collection("users").doc(userId).get().then((doc) => {
-                if (doc.exists) {
-                    username = doc.data().name || user.email;
-                } else {
-                    username = user.email;
-                }
-                setElementById("usernameDiv", "<b>" + username + "</b>");
-                if (sPage == "index.html" || sPage == "") {
-                    $( ".login-panel" ).hide();
-                    $( ".content-panel" ).show();
-                    populateList();
-                } else if (sPage == "about.html") {
-                    $( "#loginBtn" ).hide();
-                    $( "#beginBtn" ).show();
-                }
+            handleUserPostAuth(user, function() {
+                db.collection("users").doc(userId).get().then((doc) => {
+                    if (doc.exists) {
+                        username = doc.data().name || user.email;
+                    } else {
+                        username = user.email;
+                    }
+                    setElementById("usernameDiv", "<b>" + username + "</b>");
+                    if (sPage == "index.html" || sPage == "") {
+                        $( ".login-panel" ).hide();
+                        $( ".content-panel" ).show();
+                        populateList();
+                    } else if (sPage == "about.html") {
+                        $( "#loginBtn" ).hide();
+                        $( "#beginBtn" ).show();
+                    }
+                });
             });
         } else {
             userId = null;
@@ -187,6 +197,113 @@ function logout() {
         alert("Error logging out: " + error.message);
     });
 }
+
+function authenticateGoogle() {
+    var provider = new firebase.auth.GoogleAuthProvider();
+    provider.addScope('email');
+    provider.addScope('profile');
+    
+    auth.signInWithPopup(provider).then((result) => {
+        handleUserPostAuth(result.user, function() {
+            // onAuthStateChanged handles UI
+        });
+    }).catch((error) => {
+        if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') {
+            auth.signInWithRedirect(provider);
+        } else if (error.code === 'auth/account-exists-with-different-credential') {
+            alert("An account already exists with this email address. Please sign in with your email and password.");
+        } else {
+            alert("Google Sign-In failed: " + error.message);
+        }
+    });
+}
+
+function handleUserPostAuth(user, callback) {
+    if (!user) {
+        if (callback) callback();
+        return;
+    }
+    var uid = user.uid;
+    var email = (user.email || "").toLowerCase();
+    
+    db.collection("users").doc(uid).get().then((doc) => {
+        if (doc.exists) {
+            var data = doc.data();
+            if (!data.email && email) {
+                db.collection("users").doc(uid).set({ email: email }, { merge: true }).then(() => {
+                    if (callback) callback();
+                }).catch(() => { if (callback) callback(); });
+            } else {
+                if (callback) callback();
+            }
+        } else {
+            // Check if there is an existing account with this email under a different UID
+            if (email) {
+                db.collection("users").where("email", "==", email).get().then((querySnapshot) => {
+                    if (!querySnapshot.empty) {
+                        var existingDoc = querySnapshot.docs[0];
+                        var existingData = existingDoc.data();
+                        var oldUid = existingDoc.id;
+                        db.collection("users").doc(uid).set({
+                            name: existingData.name || user.displayName || email,
+                            email: email,
+                            dob: existingData.dob || existingData.DOB || firebase.firestore.Timestamp.fromDate(new Date("1988-11-18"))
+                        }, { merge: true }).then(() => {
+                            migratePersons(oldUid, uid);
+                            if (callback) callback();
+                        }).catch(() => { if (callback) callback(); });
+                    } else {
+                        // Check if existing doc used name as email
+                        db.collection("users").where("name", "==", email).get().then((nameSnapshot) => {
+                            if (!nameSnapshot.empty) {
+                                var existingDoc = nameSnapshot.docs[0];
+                                var existingData = existingDoc.data();
+                                var oldUid = existingDoc.id;
+                                db.collection("users").doc(uid).set({
+                                    name: existingData.name || user.displayName || email,
+                                    email: email,
+                                    dob: existingData.dob || existingData.DOB || firebase.firestore.Timestamp.fromDate(new Date("1988-11-18"))
+                                }, { merge: true }).then(() => {
+                                    migratePersons(oldUid, uid);
+                                    if (callback) callback();
+                                }).catch(() => { if (callback) callback(); });
+                            } else {
+                                // Brand new user
+                                var dob = new Date("1988-11-18");
+                                db.collection("users").doc(uid).set({
+                                    email: email,
+                                    name: user.displayName || email,
+                                    dob: firebase.firestore.Timestamp.fromDate(dob)
+                                }).then(() => {
+                                    if (callback) callback();
+                                }).catch(() => { if (callback) callback(); });
+                            }
+                        }).catch(() => { if (callback) callback(); });
+                    }
+                }).catch(() => { if (callback) callback(); });
+            } else {
+                if (callback) callback();
+            }
+        }
+    }).catch(() => {
+        if (callback) callback();
+    });
+}
+
+function migratePersons(oldUid, newUid) {
+    if (!oldUid || !newUid || oldUid === newUid) return;
+    db.collection("persons").where("userId", "==", oldUid).get().then((snap) => {
+        snap.forEach((doc) => {
+            doc.ref.update({ userId: newUid, user: newUid });
+        });
+    });
+    db.collection("persons").where("user", "==", oldUid).get().then((snap) => {
+        snap.forEach((doc) => {
+            doc.ref.update({ userId: newUid, user: newUid });
+        });
+    });
+}
+
 
 var usersUnsubscribe = null;
 var webPersonsUnsubscribe = null;
